@@ -222,6 +222,12 @@ class ElasticsearchEngine extends Engine
         )->get()->keyBy($model->getKeyName());
 
         return collect($results['hits']['hits'])->map(function ($hit) use ($model, $models) {
+            $one = isset($models[$hit['_id']]) ? $models[$hit['_id']] : null;
+            if ($one && isset($hit['highlight'])) {
+                $one->highlight = $hit['highlight'];
+            }
+            return $one;
+
             return isset($models[$hit['_id']]) ? $models[$hit['_id']] : null;
         })->filter()->values();
     }
