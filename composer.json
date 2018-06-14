@@ -1,5 +1,5 @@
 {
-    "name": "maddyscout/laravel-scout-elastic",
+    "name": "maddyscout/sx-elastic",
     "description": "Elastic Driver for Laravel Scout",
     "keywords": ["laravel", "scout", "elasticsearch", "elastic"],
     "require": {
