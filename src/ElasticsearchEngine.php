@@ -25,6 +25,16 @@ class ElasticsearchEngine extends Engine
     protected $elastic;
 
     /**
+     * Fields for search and highlights
+     * @var array
+     */
+    protected $fields = ['title', 'body', 'detail_text'];
+
+    protected $highlightFragmentSize = 500;
+    protected $highlightTagOpen = '(!(';
+    protected $highlightTagClose = ')!)';
+
+    /**
      * Create a new engine instance.
      *
      * @param  \Elasticsearch\Client  $elastic
@@ -137,8 +147,19 @@ class ElasticsearchEngine extends Engine
             'type' => $builder->index ?: $builder->model->searchableAs(),
             'body' => [
                 'query' => [
-                    'bool' => [
-                        'must' => [['query_string' => [ 'query' => "*{$builder->query}*"]]]
+                    'query_string' => [
+                        'fields' => $this->fields,
+                        'query' => "{$builder->query}"
+                    ],
+                ],
+
+                'highlight' => [
+                    'fragment_size' => $this->highlightFragmentSize,
+                    'fields' => [
+                        '*' => (object)[
+                            "pre_tags" => [$this->highlightTagOpen],
+                            "post_tags" => [$this->highlightTagClose]
+                        ]
                     ]
                 ]
             ]
